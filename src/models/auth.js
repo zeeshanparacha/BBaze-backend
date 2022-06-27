@@ -12,17 +12,10 @@ const userSchema = new mongoose.Schema(
       index: true,
       lowercase: true,
     },
-    name: {
-      type: String,
-      trim: true,
-      required: true,
-      max: 32,
-    },
     email: {
       type: String,
       trim: true,
       required: true,
-      max: 32,
       unique: true,
       lowercase: true,
     },
@@ -30,39 +23,36 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    salt: String,
     role: {
       type: String,
-      default: "organizer",
+      default: "organizer"
     },
-    resetPasswordLink: {
-      data: String,
-      default: "",
-    },
+    salt: String,
   },
   { timestamps: true }
 );
 
-//virtual feilds
+// virtual fields
 userSchema
   .virtual("password")
   .set(function (password) {
-    //create temp variable called _password
+    // create temp variable called _password
     this._password = password;
-    //generate salt
+    // generate salt
     this.salt = this.makeSalt();
-    //encrypt password
+    // encrypt password
     this.hashed_password = this.encryptPassword(password);
   })
   .get(function () {
     return this._password;
   });
 
-//methods > authenticate , encryptPassword , make Salt
+// methods > authenticate, encryptPassword, makeSalt
 userSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
+
   encryptPassword: function (password) {
     if (!password) return "";
     try {
@@ -74,9 +64,12 @@ userSchema.methods = {
       return "";
     }
   },
+
   makeSalt: function () {
-    return Math.round(new Date().valueOf * Math.random()) + "";
+    return Math.round(new Date().valueOf() * Math.random()) + "";
   },
+
 };
-//export user model
+// export user model
+
 module.exports = mongoose.model("User", userSchema);
