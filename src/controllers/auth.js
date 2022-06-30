@@ -52,12 +52,13 @@ exports.login = (req, res) => {
 
     // generate token and send to client
     const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
+
     return res.json({
       token,
       user,
       code: 1
     });
-  });
+  })
 };
 
 exports.requireSignin = expressjwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }); // req.user

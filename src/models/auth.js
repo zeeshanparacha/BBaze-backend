@@ -28,6 +28,16 @@ const userSchema = new mongoose.Schema(
       default: "organizer"
     },
     salt: String,
+    profile: {
+      type: String,
+      trim: true,
+    },
+    name: {
+      type: String,
+    },
+    profession: {
+      type: String,
+    }
   },
   { timestamps: true }
 );

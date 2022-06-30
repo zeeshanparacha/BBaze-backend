@@ -1,5 +1,5 @@
 const Project = require('../models/projects');
-const JWT = require('jsonwebtoken');
+const User = require('../models/auth');
 
 exports.createProject = (req, res) => {
   // create new project
@@ -22,10 +22,10 @@ exports.createProject = (req, res) => {
 
 exports.getProjectsByCategory = (req, res) => {
   const { category } = req.body;
-  Project.find({ category }).exec(async (err, projects) => {
+  Project.find({ category }).populate('user').exec(async (err, projects) => {
     if (err || !projects) {
       return res.status(400).json({
-        error: 'Projects not found',
+        error: 'Projects not found.',
         code: 0
       });
     }
@@ -38,7 +38,7 @@ exports.getProjectsByCategory = (req, res) => {
 
 exports.getProject = (req, res) => {
   const { _id } = req.body;
-  Project.findOne({ _id }).exec(async (err, project) => {
+  Project.findOne({ _id }).populate('user').exec(async (err, project) => {
     if (err || !project) {
       return res.status(400).json({
         error: 'Project not found',

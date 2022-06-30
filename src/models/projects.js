@@ -39,10 +39,17 @@ const projectSchema = new mongoose.Schema(
     documents: [{
       url: { type: String }
     }],
+    images: [{
+      url: { type: String }
+    }],
     notes: [{
       meetingDate: { type: Date },
       text: { type: String },
-    }]
+    }],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
   },
   { timestamps: true }
 );
