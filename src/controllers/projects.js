@@ -19,6 +19,24 @@ exports.createProject = (req, res) => {
   });
 };
 
+exports.updateProject = (req, res) => {
+  // update a project
+  const { _id } = req.body;
+  Project.findOneAndUpdate({ _id }, req.body, { new: true }).exec(async (err, project) => {
+    if (err || !project) {
+      return res.status(400).json({
+        error: 'Error saving project in database. Try later',
+        code: 0
+      });
+    }
+    return res.json({
+      message: 'Project updated successfully.',
+      data: project,
+      code: 1
+    });
+  });
+};
+
 
 exports.getProjectsByCategory = (req, res) => {
   const { category } = req.body;
