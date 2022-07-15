@@ -6,7 +6,7 @@ exports.createProject = (req, res) => {
   const newProject = new Project(req.body);
   newProject.save((err, result) => {
     if (err) {
-      return res.status(401).json({
+      return res.status(500).json({
         error: 'Error saving project in database. Try later',
         code: 0,
       });

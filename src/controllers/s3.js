@@ -1,7 +1,6 @@
-const { S3, ListObjectsCommand } = require('@aws-sdk/client-s3');
+const { S3, ListObjectsCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-
 
 const s3 = new S3({
     credentials: {
@@ -13,13 +12,10 @@ const s3 = new S3({
 const BUCKET_NAME = process.env.AWS_S3_BUCKET;
 
 // Upload File to S3
-const uploadFile = multer({
+exports.S3Multer = multer({
     storage: multerS3({
         s3: s3,
         bucket: BUCKET_NAME,
-        prefix: function (req, file, cb) {
-            cb(null, req.prefix)
-        },
         key: function (req, file, cb) {
             let _file = file.originalname;
             let prefix = req?.url?.split("/").pop();
@@ -27,10 +23,11 @@ const uploadFile = multer({
             cb(null, fullPath)
         }
     })
-})
+}).single('file')
+
 
 // Download File from S3
-const downloadFile = async (filename) => {
+exports.downloadFile = async (filename) => {
     try {
         const res = await s3.getObject({ Bucket: BUCKET_NAME, Key: filename }).promise();
         return { success: true, data: res.Body }
@@ -40,20 +37,27 @@ const downloadFile = async (filename) => {
 }
 
 // Delete File from S3
-const deleteFile = async (filename) => {
+exports.deleteFile = async (req, res) => {
+    const filename = req.params.filename;
+    const prefix = req?.url?.split("/")?.slice(2, 3)[0] + '/';
+    const key = prefix + filename;
     try {
-        await s3.deleteObject({ Bucket: BUCKET_NAME, Key: filename }).promise();
-        return { success: true, data: "File deleted Successfully" }
-    } catch (error) {
-        return { success: false, data: null }
+        await s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
+        return res.json({ code: 1, message: "File deleted successfully." });
+    } catch (err) {
+        return res.status(500).json({
+            error: 'Could not delete file. Try later',
+            code: 0,
+            ms: err
+        })
     }
 }
 
 // List All Files from S3
-const listFiles = async (req, res) => {
+exports.listFiles = async (req, res) => {
     let prefix = req?.url?.split("/").pop();
 
-    if (!prefix) return res.status(401).json({
+    if (!prefix) return res.status(404).json({
         error: 'Could not found files.',
         code: 0,
     })
@@ -66,16 +70,23 @@ const listFiles = async (req, res) => {
             code: 1
         });
     } catch (error) {
-        return res.status(401).json({
+        return res.status(500).json({
             error: 'Error fetching objects from bucket. Try later',
             code: 0,
         });
     }
 }
-
-module.exports = {
-    uploadFile,
-    listFiles,
-    downloadFile,
-    deleteFile,
-}
+exports.upload = (req, res) => {
+    if (!req.file.location) {
+        return res.status(500).json({
+            error: 'Unable to upload file. Try later',
+            code: 0,
+            data: null
+        });
+    }
+    return res.json({
+        message: 'File has been uploaded successfully.',
+        code: 1,
+        data: req.file.location
+    });
+};
