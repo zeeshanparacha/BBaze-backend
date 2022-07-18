@@ -1,13 +1,20 @@
 const Project = require('../models/projects');
-const User = require('../models/auth');
+const { createProjectBucket } = require("./s3");
 
 exports.createProject = (req, res) => {
   // create new project
   const newProject = new Project(req.body);
-  newProject.save((err, result) => {
+  newProject.save(async (err, result) => {
     if (err) {
       return res.status(500).json({
-        error: 'Error saving project in database. Try later',
+        error: 'Error creating project in database. Try later',
+        code: 0,
+      });
+    }
+    let response = await createProjectBucket(result._id);
+    if (response.code === 0) {
+      return res.json({
+        error: 'Error creating project in database. Try later',
         code: 0,
       });
     }
