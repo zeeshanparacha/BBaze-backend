@@ -1,3 +1,5 @@
 module.exports = function (app) {
-  require("./user.routes")(app);
+  require("./auth.routes")(app);
+  require("./projects.routes")(app);
+  require("./s3.routes")(app);
 };
