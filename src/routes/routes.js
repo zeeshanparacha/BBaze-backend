@@ -3,5 +3,6 @@ module.exports = function (app) {
   require("./projects.routes")(app);
   require("./s3.routes")(app);
   require("./permissions.routes")(app);
+  require("./organizations.routes")(app);
 
 };

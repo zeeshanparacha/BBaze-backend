@@ -4,10 +4,10 @@ module.exports = function (app) {
     const { requireSignin, authenticate } = require("../controllers/auth");
     const { addUserToProject, getAllUsersPermissions, getUserPermissions, deleteUserPermissions } = require("../controllers/permissions");
 
-    router.post('/add-user', addUserToProject);
-    router.post('/get-all-users-permissions', getAllUsersPermissions);
-    router.post('/get-user-permissions', getUserPermissions);
-    router.post('/delete-user-from-project', deleteUserPermissions);
+    router.post('/add-user', requireSignin, authenticate, addUserToProject);
+    router.post('/get-all-users-permissions', requireSignin, authenticate, getAllUsersPermissions);
+    router.post('/get-user-permissions', requireSignin, authenticate, getUserPermissions);
+    router.post('/delete-user-from-project', requireSignin, authenticate, deleteUserPermissions);
 
     app.use("/permissions", router);
 };
