@@ -61,6 +61,21 @@ exports.login = (req, res) => {
   })
 };
 
+exports.getAllUsers = (req, res) => {
+  User.find({}).exec(async (err, users) => {
+    if (err || !users) {
+      return res.status(400).json({
+        error: 'Users not found',
+        code: 0
+      });
+    }
+    return res.json({
+      data: users,
+      code: 1
+    });
+  });
+};
+
 exports.requireSignin = expressjwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }); // req.user
 
 exports.authenticate = (err, _, res, next) => {
