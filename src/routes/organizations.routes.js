@@ -7,7 +7,7 @@ module.exports = function (app) {
     const { userRegisterValidator, } = require('../validators/auth');
     const { runValidation } = require('../validators');
 
-    router.post('/register', userRegisterValidator, runValidation, register);
+    router.post('/register', userRegisterValidator, runValidation, requireSignin, authenticate, register);
     router.get('/users', requireSignin, authenticate, getAllUsers);
     router.post('/user', requireSignin, authenticate, getUser);
     router.post('/update-user', requireSignin, authenticate, updateUser);
