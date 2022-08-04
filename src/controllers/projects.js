@@ -76,3 +76,35 @@ exports.getProject = (req, res) => {
     });
   });
 };
+
+exports.approveProject = (req, res) => {
+  const { _id } = req.body;
+  Project.findOneAndUpdate({ _id }, { $set: { 'status': 'approved' } }).exec(async (err, project) => {
+    if (err || !project) {
+      return res.status(400).json({
+        error: 'Unable to approve project',
+        code: 0
+      });
+    }
+    return res.json({
+      data: project,
+      code: 1
+    });
+  });
+};
+
+exports.rejectProject = (req, res) => {
+  const { _id } = req.body;
+  Project.findOneAndDelete({ _id }).exec(async (err, project) => {
+    if (err || !project) {
+      return res.status(400).json({
+        error: 'Unable to delete project',
+        code: 0
+      });
+    }
+    return res.json({
+      message: "Project deleted successfully.",
+      code: 1
+    });
+  });
+};
