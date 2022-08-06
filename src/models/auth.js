@@ -37,7 +37,25 @@ const userSchema = new mongoose.Schema(
     },
     profession: {
       type: String,
-    }
+    },
+    town: {
+      type: String,
+    },
+    expertiseFeild: {
+      type: String,
+    },
+    mobileNumber: {
+      type: String,
+    },
+    telephone: {
+      type: String,
+    },
+    fax: {
+      type: String,
+    },
+    loginName: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
