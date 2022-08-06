@@ -1,6 +1,7 @@
 const { S3, ListObjectsCommand, DeleteObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+const Project = require('../models/projects');
 
 const s3 = new S3({
     credentials: {
@@ -43,10 +44,24 @@ exports.deleteFile = async (req, res) => {
     const prefix = req?.url?.split("/").pop();
     const projectId = req.body.projectId;
     const filename = req.body.fileName;
+    const fileId = req.body.fileId;
+    const fileType = prefix === 'images' ? prefix : "documents";
     const key = `${projectId}/${prefix}/${filename}`;
     try {
         await s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
-        return res.json({ code: 1, message: "File deleted successfully." });
+        Project.findOneAndUpdate({ _id: projectId }, { '$pull': { [fileType]: { '_id': fileId } } }, { new: true, multi: true })
+            .exec((err, deleted) => {
+                if (err || !deleted) {
+                    return res.status(400).json({
+                        error: 'Could not delete file. Try later',
+                        code: 0
+                    });
+                }
+                return res.status(200).json({
+                    message: "Successfully deleted file",
+                    code: 1
+                })
+            });
     } catch (err) {
         return res.status(500).json({
             error: 'Could not delete file. Try later',
