@@ -47,7 +47,7 @@ exports.updateProject = (req, res) => {
 
 exports.getProjectsByCategory = (req, res) => {
   const { category } = req.body;
-  Project.find({ category }).populate('user').exec(async (err, projects) => {
+  Project.find({ category, status: { $ne: "pending" } }).populate('user').exec(async (err, projects) => {
     if (err || !projects) {
       return res.status(400).json({
         error: 'Projects not found.',
@@ -72,6 +72,21 @@ exports.getProject = (req, res) => {
     }
     return res.json({
       data: project,
+      code: 1
+    });
+  });
+};
+
+exports.getApproveProjects = (_, res) => {
+  Project.find({ status: "pending" }).exec(async (err, projects) => {
+    if (err || !projects) {
+      return res.status(400).json({
+        error: 'Unable to get pending projects',
+        code: 0
+      });
+    }
+    return res.json({
+      data: projects,
       code: 1
     });
   });

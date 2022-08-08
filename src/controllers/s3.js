@@ -20,7 +20,6 @@ exports.S3Multer = multer({
         key: function (req, file, cb) {
             let projectId = req.body.projectId
             let _file = file.originalname;
-            console.log('_file', _file)
             let prefix = req?.url?.split("/").pop();
             let fullPath = `${projectId}/${prefix}/${_file}`;
             cb(null, fullPath)
@@ -28,6 +27,20 @@ exports.S3Multer = multer({
     })
 }).single('file')
 
+//upload-profile-multer
+exports.s3ProfileMulter = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: BUCKET_NAME,
+        key: function (req, file, cb) {
+            let userId = req.body.userId
+            let _file = file.originalname;
+            let ext = _file.split(".").pop();
+            let fullPath = `${userId}/image.${ext}`;
+            cb(null, fullPath)
+        }
+    })
+}).single('file')
 
 // Download File from S3
 exports.downloadFile = async (filename) => {
@@ -84,7 +97,8 @@ exports.listFiles = async (req, res) => {
 
     try {
         const files = await s3.send(new ListObjectsCommand({ Bucket: BUCKET_NAME, Prefix: path }));
-        const urls = files.Contents.filter(file => file.Size).map(file => `https://${BUCKET_NAME}.s3.amazonaws.com/${file.Key}`)
+        const urls = files.Contents.filter(file => file.Size)
+            .map(file => `https://${BUCKET_NAME}.s3.amazonaws.com/${file.Key}`)
         return res.json({
             data: urls,
             code: 1
