@@ -1,5 +1,6 @@
 const Project = require('../models/projects');
 const User = require('../models/auth');
+const { ObjectId } = require('mongodb');
 
 const { createProjectBucket } = require("./s3");
 
@@ -7,6 +8,7 @@ exports.createProject = (req, res) => {
   // create new project
   const newProject = new Project(req.body);
   newProject.save(async (err, result) => {
+    console.log('result', result)
     if (err) {
       return res.status(500).json({
         error: 'Error creating project in database. Try later',
@@ -20,27 +22,36 @@ exports.createProject = (req, res) => {
         code: 0,
       });
     }
-    User.findOne(result._id, function (err, user) {
+    User.findOne({ _id: ObjectId(result.user) }, function (err, user) {
       if (err) {
         return res.status(500).json({
           error: 'Error creating project in database. Try later',
           code: 0,
         });
       }
-      user.projects.push(result);
-      user.save(async (err, _result) => {
-        if (err) {
-          return res.status(500).json({
-            error: 'Error creating project in database. Try later',
-            code: 0,
+      if (!user.projects.includes(result.user)) {
+        user.projects.push(result.user);
+        user.save(async (err, _result) => {
+          if (err) {
+            return res.status(500).json({
+              error: 'Error adding user permissions to project. Try later',
+              code: 0,
+            });
+          }
+          return res.json({
+            message: 'Project created successfully.',
+            result,
+            code: 1
           });
-        }
+        })
+      }
+      else {
         return res.json({
           message: 'Project created successfully.',
           result,
           code: 1
         });
-      })
+      }
     });
   });
 };
