@@ -37,7 +37,29 @@ const userSchema = new mongoose.Schema(
     },
     profession: {
       type: String,
-    }
+    },
+    town: {
+      type: String,
+    },
+    expertiseFeild: {
+      type: String,
+    },
+    mobileNumber: {
+      type: String,
+    },
+    telephone: {
+      type: String,
+    },
+    fax: {
+      type: String,
+    },
+    about: {
+      type: String,
+    },
+    loginName: {
+      type: String,
+    },
+    projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'projects' }]
   },
   { timestamps: true }
 );

@@ -4,5 +4,6 @@ module.exports = function (app) {
   require("./s3.routes")(app);
   require("./permissions.routes")(app);
   require("./organizations.routes")(app);
+  require("./profile.routes")(app);
 
 };

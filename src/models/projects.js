@@ -42,6 +42,10 @@ const projectSchema = new mongoose.Schema(
     images: [{
       url: { type: String }
     }],
+    status: {
+      type: String,
+      default: "pending"
+    },
     notes: [{
       meetingDate: { type: Date },
       text: { type: String },
