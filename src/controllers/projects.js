@@ -77,7 +77,7 @@ exports.updateProject = (req, res) => {
 
 exports.getProjectsByCategory = (req, res) => {
   const { category } = req.body;
-  Project.find({ category, status: { $ne: "pending" } }).populate('user').exec(async (err, projects) => {
+  Project.find({ category }).populate('user').exec(async (err, projects) => {
     if (err || !projects) {
       return res.status(400).json({
         error: 'Projects not found.',
