@@ -53,6 +53,9 @@ const userSchema = new mongoose.Schema(
     fax: {
       type: String,
     },
+    about: {
+      type: String,
+    },
     loginName: {
       type: String,
     },
