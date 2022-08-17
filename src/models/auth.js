@@ -59,6 +59,7 @@ const userSchema = new mongoose.Schema(
     loginName: {
       type: String,
     },
+    projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'projects' }]
   },
   { timestamps: true }
 );

@@ -1,4 +1,6 @@
 const Project = require('../models/projects');
+const User = require('../models/auth');
+
 const { createProjectBucket } = require("./s3");
 
 exports.createProject = (req, res) => {
@@ -18,10 +20,27 @@ exports.createProject = (req, res) => {
         code: 0,
       });
     }
-    return res.json({
-      message: 'Project created successfully.',
-      result,
-      code: 1
+    User.findOne(result._id, function (err, user) {
+      if (err) {
+        return res.status(500).json({
+          error: 'Error creating project in database. Try later',
+          code: 0,
+        });
+      }
+      user.projects.push(result);
+      user.save(async (err, _result) => {
+        if (err) {
+          return res.status(500).json({
+            error: 'Error creating project in database. Try later',
+            code: 0,
+          });
+        }
+        return res.json({
+          message: 'Project created successfully.',
+          result,
+          code: 1
+        });
+      })
     });
   });
 };
@@ -120,6 +139,22 @@ exports.rejectProject = (req, res) => {
     return res.json({
       message: "Project deleted successfully.",
       code: 1
+    });
+  });
+};
+
+exports.closeProject = (req, res) => {
+  const { _id } = req.body;
+  Project.findOneAndUpdate({ _id }, { $set: { 'status': 'closed' } }).exec(async (err, project) => {
+    if (err || !project) {
+      return res.status(400).json({
+        error: 'Unable to close project',
+        code: 0
+      });
+    }
+    return res.json({
+      code: 1,
+      message: "Project closed successfully.",
     });
   });
 };
