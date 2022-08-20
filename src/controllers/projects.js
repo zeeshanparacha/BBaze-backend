@@ -169,3 +169,19 @@ exports.closeProject = (req, res) => {
     });
   });
 };
+
+exports.addMessage = (req, res) => {
+  const { _id } = req.body;
+  Project.findOneAndUpdate({ _id }, { $set: { 'status': 'closed' } }).exec(async (err, project) => {
+    if (err || !project) {
+      return res.status(400).json({
+        error: 'Unable to close project',
+        code: 0
+      });
+    }
+    return res.json({
+      code: 1,
+      message: "Project closed successfully.",
+    });
+  });
+};
