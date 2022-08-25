@@ -77,7 +77,7 @@ exports.updateProject = (req, res) => {
 
 exports.getProjectsByCategory = (req, res) => {
   const { category } = req.body;
-  Project.find({ category, status: { $ne: "pending" } }).populate('user').exec(async (err, projects) => {
+  Project.find({ category }).populate('user').exec(async (err, projects) => {
     if (err || !projects) {
       return res.status(400).json({
         error: 'Projects not found.',
@@ -155,6 +155,22 @@ exports.rejectProject = (req, res) => {
 };
 
 exports.closeProject = (req, res) => {
+  const { _id } = req.body;
+  Project.findOneAndUpdate({ _id }, { $set: { 'status': 'closed' } }).exec(async (err, project) => {
+    if (err || !project) {
+      return res.status(400).json({
+        error: 'Unable to close project',
+        code: 0
+      });
+    }
+    return res.json({
+      code: 1,
+      message: "Project closed successfully.",
+    });
+  });
+};
+
+exports.addMessage = (req, res) => {
   const { _id } = req.body;
   Project.findOneAndUpdate({ _id }, { $set: { 'status': 'closed' } }).exec(async (err, project) => {
     if (err || !project) {

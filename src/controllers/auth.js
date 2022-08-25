@@ -79,11 +79,11 @@ exports.getAllUsers = (req, res) => {
 exports.requireSignin = expressjwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }); // req.user
 
 exports.authenticate = (err, _, res, next) => {
-  // if (err.name === 'UnauthorizedError') {
-  //   return res.status(401).json({
-  //     error: 'Your token is expired, please login again.',
-  //     code: 0
-  //   });
-  // }
+  if (err.name === 'UnauthorizedError') {
+    return res.status(401).json({
+      error: 'Your token is expired, please login again.',
+      code: 0
+    });
+  }
   next()
 }

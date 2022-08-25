@@ -5,5 +5,5 @@ module.exports = function (app) {
   require("./permissions.routes")(app);
   require("./organizations.routes")(app);
   require("./profile.routes")(app);
-
+  require("./chat.routes")(app);
 };
