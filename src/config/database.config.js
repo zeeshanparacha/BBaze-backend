@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const User = require('../controllers/auth');
-const shortId = require('shortid');
 require("dotenv").config();
+const mongoose = require("mongoose");
+const User = require('../models/auth');
+const shortId = require('shortid');
 
 function connect(callback) {
   try {
@@ -12,7 +12,7 @@ function connect(callback) {
       })
       .then(() => {
         User.findOne({ email: process.env.ADMIN_EMAIL }).exec((err, admin) => {
-          if (err) throw err;
+          if (err) return console.log('123', err);
           if (admin) {
             callback();
           } else {
