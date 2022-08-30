@@ -59,7 +59,8 @@ const userSchema = new mongoose.Schema(
     loginName: {
       type: String,
     },
-    projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'projects' }]
+    projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'projects' }],
+    resetPasswordLink: { type: String, }
   },
   { timestamps: true }
 );

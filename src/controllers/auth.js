@@ -2,7 +2,15 @@ const User = require('../models/auth');
 const JWT = require('jsonwebtoken');
 var { expressjwt: expressjwt } = require("express-jwt");
 const shortId = require('shortid');
-const _ = require('lodash');
+const AWS = require("aws-sdk");
+const { resetPasswordParams } = require("../helper/email")
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACESS_KEY,
+  region: process.env.AWS_REGION
+})
+const SES = new AWS.SES({ apiVersion: "2010-12-01" })
 
 exports.register = (req, res) => {
   const email = req.body.email;
@@ -75,6 +83,45 @@ exports.getAllUsers = (req, res) => {
     });
   });
 };
+
+exports.forgetPassword = (req, res) => {
+  const { email } = req.body;
+  //check if user does not exist in database
+  User.findOne({ email }).exec((err, user) => {
+    if (err || !user) return res.status(400).json({
+      error: "We could not verify your email, please try again!",
+      code: 0
+    })
+
+    //generate token with email
+    const token = jwt.sign({ email }, process.env.JWT_RESET_PASSWORD, {
+      expiresIn: '10m'
+    })
+    user.updateOne({ resetPasswordLink: token }, (err, success) => {
+      if (err) {
+        return res.status(400).json({
+          error: 'Password reset failed. Try later.'
+        });
+      }
+      //send email
+      const params = resetPasswordParams(email, user.name, token)
+      const sendEmail = SES.sendEmail(params).promise();
+      sendEmail
+        .then(response => {
+          res.json({
+            code: 1,
+            message: `Email has been sent to ${email}, Follow the instructions to complete your registration`
+          })
+        })
+        .catch(error => {
+          res.json({
+            error: `We could not verify your email, please try again!`,
+            code: 0
+          })
+        })
+    })
+  })
+}
 
 exports.requireSignin = expressjwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }); // req.user
 
