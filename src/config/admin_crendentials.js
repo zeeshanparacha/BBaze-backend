@@ -3,17 +3,17 @@ require("dotenv").config();
 const ADMIN_CREDENTIALS = () => {
     return {
         email: process.env.ADMIN_EMAIL,
-        password: "123456",
-        name: "Tresor Matonde",
-        profession: "Contracter",
-        telephone: "+942 411 412",
-        mobileNumber: "+942 411 412",
-        expertiseFeild: "Contracter",
-        town: "USA",
-        fax: 0900,
-        about: "A US based professional.",
+        password: process.env.ADMIN_PASSWORD,
+        name: "Trésor M. Matondo",
+        profession: "Videographer",
+        mobileNumber: "704 312 0524",
+        expertiseFeild: "Media",
+        town: "Maryland",
         role: "admin",
+        fax: "",
+        about: "",
         profile: "",
+        telephone: "",
     }
 }
 module.exports = {
