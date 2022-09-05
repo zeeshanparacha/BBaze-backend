@@ -59,7 +59,7 @@ exports.login = (req, res) => {
     }
 
     // generate token and send to client
-    const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     return res.json({
       token,
