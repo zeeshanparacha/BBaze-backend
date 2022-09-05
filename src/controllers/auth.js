@@ -1,6 +1,6 @@
 const User = require('../models/auth');
 const JWT = require('jsonwebtoken');
-var { expressjwt: expressjwt } = require("express-JWT");
+var { expressjwt: expressjwt } = require("express-jwt");
 const shortId = require('shortid');
 const AWS = require("aws-sdk");
 const { resetPasswordParams } = require("../helper/email")
